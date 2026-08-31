@@ -1,0 +1,42 @@
+{
+  "title": "Duty Roster",
+  "subtitle": "Lord's Day service assignments — click any cell to edit",
+  "dates": ["6-Sept", "13-Sept", "20-Sept", "27-Sept"],
+  "sections": [
+    {
+      "time": "9:00 AM",
+      "name": "Before Bible Class",
+      "rows": [
+        { "role": "BBC Song Leading", "values": ["Charles Dabuan", "Lester Boliboli", "Joshua Leong", "Jyven Yu"] },
+        { "role": "BBC Opening Prayer", "values": ["Josiah Chan", "Joemarie Ingal", "Frey Kuah", "Lucas Goh"] }
+      ]
+    },
+    {
+      "time": "10:30 AM",
+      "name": "Worship Service",
+      "rows": [
+        { "role": "Announcement", "values": ["Chee Meng", "John Chan", "Andrew Chan", "Anthony Lim"] },
+        { "role": "Song Leading", "values": ["Justus Goh", "Lucas Quek", "Zilin", "Vincent Kwek"] },
+        { "role": "Opening Prayer", "values": ["Zilin", "Yekai", "Lizheng", "John Tay"] },
+        { "role": "Scripture Reading", "values": ["Chee Young", "Han Seng", "Edwin Khoo", "Vijay"] },
+        { "role": "Scripture Text", "values": ["Judges 3:15-31", "Judges 4:1-13", "Judges 4:14-24", "Judges 5:1-13"], "scripture": true },
+        { "role": "Lord's Supper IC", "values": ["Lizheng", "David Chua", "Robin Chan", "Ullas Nair"], "highlight": true },
+        { "role": "Asst — Fruit of the Vine", "values": ["Zhenken", "Elias", "Jerusalem", "Jackson Heng"] },
+        { "role": "Asst — Collection", "values": ["Jay Cheong", "Edwin Lim", "James Cheong", "Arrick Tee"] },
+        { "role": "Assistance", "values": ["Joshua Leong", "Kingsley", "Christopher Chiang", "Warren Knowler"] },
+        { "role": "Sermon", "values": ["Eddy Ee", "Kelvin Cheok", "Kelvin Cheok", "Alvin Lin"], "highlight": true },
+        { "role": "Closing Prayer", "values": ["Anthony Lim", "Robin Chan", "Tommy Nyau", "John Chan"] },
+        { "role": "Usher IC / LS Asst.", "values": ["Raymond Soh", "Ullas Nair", "Justus Goh", "Yekai"] },
+        { "role": "Usher / LS Asst.", "values": ["Ravel Lai", "Jimmy Ling", "Zhenken", "Subashbabu"] },
+        { "role": "Usher / LS Asst.", "values": ["Frey Kuah", "Lee CB", "Joemarie Ingal", "Lee CB"] },
+        { "role": "Usher / LS Asst.", "values": ["Tahnthakorn (Phone)", "Myo Khiang", "John Tay", "Arden Navales"] },
+        { "role": "Powerpoint Deck Prep", "values": ["James Cheong", "Yekai", "Audrey Tee", "Chee Young"] }
+      ]
+    }
+  ],
+  "extras": [
+    { "label": "Media Duties", "value": "Titus Goh / Justus Goh" },
+    { "label": "PA System", "value": "Tommy Nyau" },
+    { "label": "Reminder", "value": "Jimmy Ling" }
+  ]
+}

@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Duty Roster</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,500;0,600;1,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F6F4ED;
+    --card:#FFFFFF;
+    --ink:#20263A;
+    --ink-soft:#5B6178;
+    --line:#E1DED2;
+    --burgundy:#7A2E33;
+    --burgundy-dark:#5A2126;
+    --gold:#B08D48;
+    --gold-soft:#F1E7CF;
+    --edited:#3E7D5C;
+    --danger:#B0413E;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Inter',sans-serif;
+    padding:32px 20px 80px;
+  }
+  .wrap{max-width:1180px;margin:0 auto;}
+
+  header{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-end;
+    flex-wrap:wrap;
+    gap:16px;
+    margin-bottom:14px;
+    padding-bottom:20px;
+    border-bottom:2px solid var(--burgundy);
+  }
+  .title-block{max-width:640px;}
+  h1{
+    font-family:'Lora',serif;
+    font-weight:600;
+    font-size:34px;
+    margin:0 0 6px;
+    color:var(--burgundy-dark);
+    letter-spacing:0.2px;
+  }
+  h1[contenteditable]:focus, .editable:focus{
+    outline:none;
+    background:var(--gold-soft);
+    border-radius:3px;
+  }
+  .subtitle{
+    font-size:14px;
+    color:var(--ink-soft);
+    margin:0;
+  }
+  .toolbar{display:flex;align-items:center;gap:14px;flex-wrap:wrap;}
+  button{
+    font-family:'Inter',sans-serif;
+    font-size:13px;
+    font-weight:500;
+    padding:9px 14px;
+    border-radius:7px;
+    border:1px solid var(--line);
+    background:var(--card);
+    color:var(--ink);
+    cursor:pointer;
+    transition:all .15s ease;
+  }
+  button:hover{border-color:var(--burgundy);color:var(--burgundy-dark);}
+  button.ghost-danger:hover{border-color:var(--danger);color:var(--danger);}
+
+  .status{
+    font-size:12.5px;
+    color:var(--ink-soft);
+    display:flex;
+    align-items:center;
+    gap:6px;
+    min-width:150px;
+  }
+  .status .dot{
+    width:7px;height:7px;border-radius:50%;
+    background:var(--ink-soft);
+    flex-shrink:0;
+  }
+  .status.saved .dot{background:var(--edited);}
+  .status.saving .dot{background:var(--gold);}
+  .status.offline .dot{background:var(--danger);}
+  .status.offline{color:var(--danger);}
+
+  .section{
+    background:var(--card);
+    border-radius:12px;
+    border:1px solid var(--line);
+    margin-bottom:26px;
+    overflow:hidden;
+  }
+  .section-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:14px 20px;
+    background:var(--burgundy);
+    color:#fff;
+  }
+  .section-head h2{
+    font-family:'Lora',serif;
+    font-size:16px;
+    font-weight:600;
+    margin:0;
+    letter-spacing:0.3px;
+  }
+  .section-head .time{
+    font-size:12.5px;
+    opacity:0.85;
+  }
+
+  table{
+    width:100%;
+    border-collapse:collapse;
+    table-layout:fixed;
+  }
+  th,td{
+    border-bottom:1px solid var(--line);
+    border-right:1px solid var(--line);
+    padding:10px 14px;
+    font-size:13.5px;
+    vertical-align:top;
+    line-height:1.4;
+  }
+  th:last-child,td:last-child{border-right:none;}
+  tr:last-child td{border-bottom:none;}
+
+  thead th{
+    background:var(--gold-soft);
+    font-family:'Lora',serif;
+    font-weight:600;
+    color:var(--burgundy-dark);
+    font-size:13px;
+    position:sticky;
+    top:0;
+  }
+  .role-col{
+    width:190px;
+    background:#FAF9F4;
+    font-weight:600;
+    color:var(--ink-soft);
+    font-size:12.5px;
+    text-transform:uppercase;
+    letter-spacing:0.3px;
+  }
+  .date-col{width:auto;}
+  .row-scripture td{font-style:italic;color:var(--ink-soft);background:#FCFBF7;}
+  .row-highlight .role-col{color:var(--burgundy-dark);}
+  tr:hover td:not(.role-col){background:#FBF7EC;}
+
+  td[contenteditable]:focus, th[contenteditable]:focus{
+    outline:2px solid var(--gold);
+    outline-offset:-2px;
+    background:#fff;
+  }
+  .col-remove{
+    text-align:center;
+    color:var(--ink-soft);
+    cursor:pointer;
+    font-size:12px;
+    opacity:0.6;
+  }
+  .col-remove:hover{opacity:1;color:var(--danger);}
+
+  footer{
+    text-align:center;
+    font-size:12px;
+    color:var(--ink-soft);
+    margin-top:10px;
+  }
+
+  @media (max-width:720px){
+    .section{overflow-x:auto;}
+    table{min-width:640px;}
+  }
+
+  .banner{
+    background:var(--gold-soft);
+    border:1px solid var(--gold);
+    color:var(--burgundy-dark);
+    font-size:12.5px;
+    padding:10px 14px;
+    border-radius:8px;
+    margin-bottom:22px;
+    display:none;
+  }
+  .banner.show{display:block;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="title-block">
+      <h1 contenteditable="true" id="pageTitle">Duty Roster</h1>
+      <p class="subtitle" contenteditable="true" id="pageSubtitle"></p>
+    </div>
+    <div class="toolbar">
+      <div class="status" id="statusIndicator"><span class="dot"></span><span id="statusText">Loading…</span></div>
+      <button id="resetBtn" class="ghost-danger">Discard unsaved edit</button>
+    </div>
+  </header>
+
+  <div class="banner" id="offlineBanner">
+    Not connected to the backend. Run <code>python3 server.py</code> in the roster folder and open
+    <code>http://localhost:8000</code> so edits are saved automatically.
+  </div>
+
+  <div id="sectionsContainer"></div>
+
+  <footer>Duty roster · frontend/backend edition — edits save to roster-data.json automatically</footer>
+</div>
+
+<script>
+const API = '/api/roster';
+let state = null;
+let lastSavedState = null;
+let saveTimer = null;
+let backendAvailable = true;
+
+function esc(s){
+  const d = document.createElement('div');
+  d.textContent = s;
+  return d.innerHTML;
+}
+
+function setStatus(kind, text){
+  const el = document.getElementById('statusIndicator');
+  el.className = 'status ' + kind;
+  document.getElementById('statusText').textContent = text;
+}
+
+async function loadFromBackend(){
+  try{
+    const res = await fetch(API, {cache:'no-store'});
+    if(!res.ok) throw new Error('bad response');
+    state = await res.json();
+    lastSavedState = JSON.parse(JSON.stringify(state));
+    backendAvailable = true;
+    document.getElementById('offlineBanner').classList.remove('show');
+    setStatus('saved', 'Loaded from backend');
+    render();
+  }catch(err){
+    backendAvailable = false;
+    document.getElementById('offlineBanner').classList.add('show');
+    setStatus('offline', 'Backend not found');
+  }
+}
+
+async function saveToBackend(){
+  if(!backendAvailable) return;
+  setStatus('saving', 'Saving…');
+  try{
+    const res = await fetch(API, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(state)
+    });
+    if(!res.ok) throw new Error('save failed');
+    lastSavedState = JSON.parse(JSON.stringify(state));
+    const now = new Date();
+    setStatus('saved', 'Saved ' + now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}));
+  }catch(err){
+    setStatus('offline', 'Could not save — check server');
+  }
+}
+
+function scheduleSave(){
+  clearTimeout(saveTimer);
+  setStatus('saving', 'Editing…');
+  saveTimer = setTimeout(saveToBackend, 700);
+}
+
+function render(){
+  document.getElementById('pageTitle').textContent = state.title;
+  document.getElementById('pageSubtitle').textContent = state.subtitle;
+
+  const container = document.getElementById('sectionsContainer');
+  container.innerHTML = '';
+
+  state.sections.forEach((section, sIdx) => {
+    const box = document.createElement('div');
+    box.className = 'section';
+
+    let theadCols = state.dates.map((d, dIdx) =>
+      `<th class="date-col"><span class="editable" contenteditable="true" data-kind="date" data-date="${dIdx}">${esc(d)}</span>${sIdx===0 ? `<div class="col-remove" data-remove-date="${dIdx}">remove week</div>` : ''}</th>`
+    ).join('');
+
+    let rowsHtml = section.rows.map((row, rIdx) => {
+      const cells = row.values.map((v, dIdx) =>
+        `<td class="editable" contenteditable="true" data-section="${sIdx}" data-row="${rIdx}" data-date="${dIdx}">${esc(v)}</td>`
+      ).join('');
+      const rowClass = row.scripture ? 'row-scripture' : (row.highlight ? 'row-highlight' : '');
+      return `<tr class="${rowClass}"><td class="role-col editable" contenteditable="true" data-role-section="${sIdx}" data-role-row="${rIdx}">${esc(row.role)}</td>${cells}</tr>`;
+    }).join('');
+
+    box.innerHTML = `
+      <div class="section-head">
+        <h2 class="editable" contenteditable="true" data-section-name="${sIdx}">${esc(section.name)}</h2>
+        <span class="time editable" contenteditable="true" data-section-time="${sIdx}">${esc(section.time)}</span>
+      </div>
+      <table>
+        <thead><tr><th class="role-col">Duty</th>${theadCols}</tr></thead>
+        <tbody>${rowsHtml}</tbody>
+      </table>
+    `;
+    container.appendChild(box);
+  });
+
+  const extraBox = document.createElement('div');
+  extraBox.className = 'section';
+  const extraRows = state.extras.map((ex, i) =>
+    `<tr><td class="role-col editable" contenteditable="true" data-extra-label="${i}">${esc(ex.label)}</td>
+      <td class="editable" contenteditable="true" data-extra-value="${i}" colspan="${state.dates.length}">${esc(ex.value)}</td></tr>`
+  ).join('');
+  extraBox.innerHTML = `
+    <div class="section-head"><h2>Additional duties</h2><span class="time">applies to all weeks</span></div>
+    <table><tbody>${extraRows}</tbody></table>
+  `;
+  container.appendChild(extraBox);
+
+  attachHandlers();
+}
+
+function attachHandlers(){
+  document.querySelectorAll('[data-section][data-row][data-date]').forEach(td => {
+    td.addEventListener('input', () => {
+      const s = +td.dataset.section, r = +td.dataset.row, d = +td.dataset.date;
+      state.sections[s].rows[r].values[d] = td.textContent;
+      scheduleSave();
+    });
+  });
+
+  document.querySelectorAll('[data-role-section]').forEach(td => {
+    td.addEventListener('input', () => {
+      const s = +td.dataset.roleSection, r = +td.dataset.roleRow;
+      state.sections[s].rows[r].role = td.textContent;
+      scheduleSave();
+    });
+  });
+
+  document.querySelectorAll('[data-kind="date"]').forEach(span => {
+    span.addEventListener('input', () => {
+      const d = +span.dataset.date;
+      state.dates[d] = span.textContent;
+      scheduleSave();
+    });
+  });
+
+  document.querySelectorAll('[data-section-name]').forEach(el => {
+    el.addEventListener('input', () => { state.sections[+el.dataset.sectionName].name = el.textContent; scheduleSave(); });
+  });
+  document.querySelectorAll('[data-section-time]').forEach(el => {
+    el.addEventListener('input', () => { state.sections[+el.dataset.sectionTime].time = el.textContent; scheduleSave(); });
+  });
+  document.querySelectorAll('[data-extra-label]').forEach(el => {
+    el.addEventListener('input', () => { state.extras[+el.dataset.extraLabel].label = el.textContent; scheduleSave(); });
+  });
+  document.querySelectorAll('[data-extra-value]').forEach(el => {
+    el.addEventListener('input', () => { state.extras[+el.dataset.extraValue].value = el.textContent; scheduleSave(); });
+  });
+
+  document.querySelectorAll('[data-remove-date]').forEach(el => {
+    el.addEventListener('click', () => {
+      const idx = +el.dataset.removeDate;
+      if(state.dates.length <= 1) return;
+      if(!confirm(`Remove the "${state.dates[idx]}" column from every section?`)) return;
+      state.dates.splice(idx,1);
+      state.sections.forEach(sec => sec.rows.forEach(row => row.values.splice(idx,1)));
+      render();
+      scheduleSave();
+    });
+  });
+
+  document.getElementById('pageTitle').oninput = e => { state.title = e.target.textContent; scheduleSave(); };
+  document.getElementById('pageSubtitle').oninput = e => { state.subtitle = e.target.textContent; scheduleSave(); };
+}
+
+document.getElementById('resetBtn').addEventListener('click', () => {
+  if(!confirm('Discard any edit made since the last save?')) return;
+  state = JSON.parse(JSON.stringify(lastSavedState));
+  render();
+  setStatus('saved', 'Reverted to last save');
+});
+
+loadFromBackend();
+</script>
+</body>
+</html>
