@@ -21,7 +21,7 @@ from pathlib import Path
 PORT = 8000
 BASE_DIR = Path(__file__).resolve().parent
 DATA_FILE = BASE_DIR / "roster-data.json"
-FRONTEND_FILE = BASE_DIR / "duty-roster.html"
+FRONTEND_FILE = BASE_DIR / "index.html"
 
 
 class RosterHandler(http.server.BaseHTTPRequestHandler):
