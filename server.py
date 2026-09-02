@@ -1,80 +1,65 @@
 """
-Duty roster backend.
+Duty roster backend — FastAPI version.
 
-Run this, then open http://localhost:8000 in a browser.
+Install once:
+    pip install fastapi uvicorn --break-system-packages
 
-What it does:
+Run:
+    python3 server.py
+    (or: uvicorn server:app --reload)
+
+Then open http://localhost:8000 in a browser.
+
+Routes:
   GET  /              -> sends the frontend (duty-roster.html)
-  GET  /api/roster     -> reads roster-data.json and sends it back as the current data
-  POST /api/roster     -> takes whatever JSON the frontend sends and overwrites
-                          roster-data.json with it
-
-That's the whole "backend": a file on disk (roster-data.json) plus two routes
-for reading it and writing it. No database needed for something this size.
+  GET  /api/roster     -> reads roster-data.json and returns it
+  POST /api/roster     -> overwrites roster-data.json with whatever JSON is sent
 """
 
 import json
-import http.server
-import socketserver
 from pathlib import Path
 
-PORT = 8000
+from fastapi import FastAPI, HTTPException, Request
+from fastapi.responses import HTMLResponse, JSONResponse
+
 BASE_DIR = Path(__file__).resolve().parent
 DATA_FILE = BASE_DIR / "roster-data.json"
-FRONTEND_FILE = BASE_DIR / "index.html"
+FRONTEND_FILE = BASE_DIR / "duty-roster.html"
+
+app = FastAPI()
 
 
-class RosterHandler(http.server.BaseHTTPRequestHandler):
+@app.get("/", response_class=HTMLResponse)
+def serve_frontend():
+    if not FRONTEND_FILE.exists():
+        raise HTTPException(status_code=404, detail="duty-roster.html not found next to server.py")
+    return FRONTEND_FILE.read_text(encoding="utf-8")
 
-    def _send_json(self, payload, status=200):
-        body = json.dumps(payload).encode("utf-8")
-        self.send_response(status)
-        self.send_header("Content-Type", "application/json")
-        self.send_header("Content-Length", str(len(body)))
-        self.end_headers()
-        self.wfile.write(body)
 
-    def do_GET(self):
-        if self.path == "/" or self.path == "/index.html":
-            html = FRONTEND_FILE.read_bytes()
-            self.send_response(200)
-            self.send_header("Content-Type", "text/html; charset=utf-8")
-            self.send_header("Content-Length", str(len(html)))
-            self.end_headers()
-            self.wfile.write(html)
+@app.get("/api/roster")
+def get_roster():
+    if not DATA_FILE.exists():
+        raise HTTPException(status_code=404, detail="roster-data.json not found next to server.py")
+    try:
+        return json.loads(DATA_FILE.read_text(encoding="utf-8"))
+    except json.JSONDecodeError as err:
+        raise HTTPException(status_code=500, detail=f"roster-data.json is not valid JSON: {err}")
 
-        elif self.path == "/api/roster":
-            data = json.loads(DATA_FILE.read_text(encoding="utf-8"))
-            self._send_json(data)
 
-        else:
-            self.send_error(404, "Not found")
+@app.post("/api/roster")
+async def save_roster(request: Request):
+    try:
+        data = await request.json()
+    except json.JSONDecodeError:
+        raise HTTPException(status_code=400, detail="Request body is not valid JSON")
 
-    def do_POST(self):
-        if self.path == "/api/roster":
-            length = int(self.headers.get("Content-Length", 0))
-            raw = self.rfile.read(length)
-            try:
-                data = json.loads(raw)
-            except json.JSONDecodeError:
-                self._send_json({"error": "invalid JSON"}, status=400)
-                return
-
-            DATA_FILE.write_text(json.dumps(data, indent=2, ensure_ascii=False), encoding="utf-8")
-            self._send_json({"status": "saved"})
-        else:
-            self.send_error(404, "Not found")
-
-    # Quieter server log lines
-    def log_message(self, fmt, *args):
-        print("[server]", fmt % args)
+    DATA_FILE.write_text(json.dumps(data, indent=2, ensure_ascii=False), encoding="utf-8")
+    return JSONResponse({"status": "saved"})
 
 
 if __name__ == "__main__":
-    with socketserver.TCPServer(("", PORT), RosterHandler) as httpd:
-        print(f"Duty roster running at http://localhost:{PORT}")
-        print(f"Reading and saving data at {DATA_FILE}")
-        try:
-            httpd.serve_forever()
-        except KeyboardInterrupt:
-            print("\nStopped.")
+    import uvicorn
+
+    print("Duty roster running at http://localhost:8000")
+    print(f"Reading and saving data at {DATA_FILE}")
+    uvicorn.run(app, host="0.0.0.0", port=8000)
